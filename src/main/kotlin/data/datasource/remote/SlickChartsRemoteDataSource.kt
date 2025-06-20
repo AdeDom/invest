@@ -2,13 +2,14 @@ package com.adedom.data.datasource.remote
 
 import com.adedom.data.datasource.providers.HttpClientProvider
 import com.adedom.data.models.response.SlickChartsResponse
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import org.jsoup.nodes.Document
 import org.jsoup.parser.Parser
 
 interface SlickChartsRemoteDataSource {
     suspend fun fetchSp500(): List<SlickChartsResponse>
+
     suspend fun fetchNasdaq100(): List<SlickChartsResponse>
 }
 
@@ -41,8 +42,7 @@ class SlickChartsRemoteDataSourceImpl(
         return tr
             ?.mapIndexedNotNull { index, element ->
                 if (index % 2 == 0) element else null
-            }
-            ?.map {
+            }?.map {
                 val td = it.getElementsByTag("td")
                 SlickChartsResponse(
                     id = td[0].text().toIntOrNull(),

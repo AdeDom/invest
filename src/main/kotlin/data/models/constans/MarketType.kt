@@ -4,5 +4,5 @@ enum class MarketType(
     val value: String,
 ) {
     NYSE("nyse"),
-    NASDAQ("nasdaq");
+    NASDAQ("nasdaq"),
 }

@@ -2,8 +2,8 @@ package com.adedom.data.datasource.remote
 
 import com.adedom.data.datasource.providers.HttpClientProvider
 import com.adedom.data.models.response.CompaniesMarketCapResponse
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import org.jsoup.nodes.Document
 import org.jsoup.parser.Parser
 
@@ -25,8 +25,7 @@ class CompaniesMarketCapRemoteDataSourceImpl(
             ?.mapNotNull { element ->
                 val adsSize = element.getElementsByClass("ad-tr no-sort").size
                 if (adsSize == 0) element else null
-            }
-            ?.map {
+            }?.map {
                 val td = it.getElementsByTag("td")
                 val companyName = it.getElementsByClass("company-name").firstOrNull()
                 val companyCode = it.getElementsByClass("company-code").firstOrNull()

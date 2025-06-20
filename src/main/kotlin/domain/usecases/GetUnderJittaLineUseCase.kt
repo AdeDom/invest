@@ -17,24 +17,26 @@ class GetUnderJittaLineUseCase(
         return try {
             val html = jittaRemoteDataSource.fetchStock(MarketType.NASDAQ, symbol)
 
-            val result = when {
-                html.contains("Under Jitta Line") -> {
-                    true
-                }
+            val result =
+                when {
+                    html.contains("Under Jitta Line") -> {
+                        true
+                    }
 
-                html.contains("Over Jitta Line") -> {
-                    false
-                }
+                    html.contains("Over Jitta Line") -> {
+                        false
+                    }
 
-                html.contains("Page not found!") -> {
-                    jittaRemoteDataSource.fetchStock(MarketType.NYSE, symbol)
-                        .contains("Under Jitta Line")
-                }
+                    html.contains("Page not found!") -> {
+                        jittaRemoteDataSource
+                            .fetchStock(MarketType.NYSE, symbol)
+                            .contains("Under Jitta Line")
+                    }
 
-                else -> {
-                    false
+                    else -> {
+                        false
+                    }
                 }
-            }
             jittaLocalDataSource.insert(symbol, result)
             return result
         } catch (e: Throwable) {

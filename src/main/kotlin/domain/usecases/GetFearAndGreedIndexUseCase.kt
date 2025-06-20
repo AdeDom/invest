@@ -6,7 +6,5 @@ import com.adedom.data.models.response.Now
 class GetFearAndGreedIndexUseCase(
     private val fearAndGreedRemoteDataSource: FearAndGreedRemoteDataSource,
 ) {
-    suspend fun execute(): Now? {
-        return fearAndGreedRemoteDataSource.fetchFearAndGreedIndex().fgi?.now
-    }
+    suspend fun execute(): Now? = fearAndGreedRemoteDataSource.fetchFearAndGreedIndex().fgi?.now
 }

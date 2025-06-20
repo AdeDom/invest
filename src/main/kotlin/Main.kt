@@ -12,34 +12,36 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.inject
 
-fun main() = runBlocking {
-    startKoin {
-        modules(appModule)
+fun main() =
+    runBlocking {
+        startKoin {
+            modules(appModule)
+        }
+
+        Database.connect("jdbc:sqlite:./data/invest.db", driver = "org.sqlite.JDBC")
+        newSuspendedTransaction {
+            SchemaUtils.create(JittaSqliteTable)
+        }
+
+        println("AdeDom :: BEGIN")
+        val getFearAndGreedIndexUseCase: GetFearAndGreedIndexUseCase by inject(GetFearAndGreedIndexUseCase::class.java)
+        val getStockUseCase: GetStockUseCase by inject(GetStockUseCase::class.java)
+
+        // Fear & Greed Index
+        val fearAndGreedIndex = getFearAndGreedIndexUseCase.execute()
+        println("AdeDom :: Fear & Greed Index - ${fearAndGreedIndex?.valueText}(${fearAndGreedIndex?.value})")
+
+        // Stock
+        val stockSources =
+            listOf(
+                StockSource.CompaniesMarketCap(1),
+                StockSource.Sp500,
+                StockSource.Nasdaq,
+            )
+        val result = getStockUseCase.execute(stockSources, true)
+        result.forEachIndexed { index, s ->
+            println("AdeDom :: ${index.plus(1)} $s")
+        }
+
+        println("AdeDom :: END")
     }
-
-    Database.connect("jdbc:sqlite:./data/invest.db", driver = "org.sqlite.JDBC")
-    newSuspendedTransaction {
-        SchemaUtils.create(JittaSqliteTable)
-    }
-
-    println("AdeDom :: BEGIN")
-    val getFearAndGreedIndexUseCase: GetFearAndGreedIndexUseCase by inject(GetFearAndGreedIndexUseCase::class.java)
-    val getStockUseCase: GetStockUseCase by inject(GetStockUseCase::class.java)
-
-    // Fear & Greed Index
-    val fearAndGreedIndex = getFearAndGreedIndexUseCase.execute()
-    println("AdeDom :: Fear & Greed Index - ${fearAndGreedIndex?.valueText}(${fearAndGreedIndex?.value})")
-
-    // Stock
-    val stockSources = listOf(
-        StockSource.CompaniesMarketCap(1),
-        StockSource.Sp500,
-        StockSource.Nasdaq,
-    )
-    val result = getStockUseCase.execute(stockSources, true)
-    result.forEachIndexed { index, s ->
-        println("AdeDom :: ${index.plus(1)} $s")
-    }
-
-    println("AdeDom :: END")
-}

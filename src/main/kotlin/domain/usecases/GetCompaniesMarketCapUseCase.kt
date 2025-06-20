@@ -9,16 +9,15 @@ import kotlinx.coroutines.coroutineScope
 class GetCompaniesMarketCapUseCase(
     private val companiesMarketCapRemoteDataSource: CompaniesMarketCapRemoteDataSource,
 ) {
-    suspend fun execute(pageCount: Int): List<String> = coroutineScope {
-        return@coroutineScope (1..pageCount)
-            .map {
-                async {
-                    companiesMarketCapRemoteDataSource.fetchCompaniesMarketCap(it)
-                }
-            }
-            .awaitAll()
-            .flatten()
-            .map(CompaniesMarketCapResponse::symbol)
-            .mapNotNull { it }
-    }
+    suspend fun execute(pageCount: Int): List<String> =
+        coroutineScope {
+            return@coroutineScope (1..pageCount)
+                .map {
+                    async {
+                        companiesMarketCapRemoteDataSource.fetchCompaniesMarketCap(it)
+                    }
+                }.awaitAll()
+                .flatten()
+                .mapNotNull(CompaniesMarketCapResponse::symbol)
+        }
 }
