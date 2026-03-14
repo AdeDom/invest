@@ -9,6 +9,7 @@ class GetUnderJittaLineUseCase(
     private val jittaRemoteDataSource: JittaRemoteDataSource,
 ) {
     suspend fun execute(symbol: String): Boolean {
+        println("AdeDom :: GetUnderJittaLineUseCase symbol = $symbol")
         val entity = jittaLocalDataSource.selectAllWhereToday().firstOrNull { it.symbol == symbol }
         if (entity != null) {
             return entity.isUnderJittaLine

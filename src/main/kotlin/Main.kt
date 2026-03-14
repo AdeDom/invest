@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.inject
 
-fun main() =
+fun main() {
     runBlocking {
         startKoin {
             modules(appModule)
@@ -36,7 +36,7 @@ fun main() =
             listOf(
                 StockSource.CompaniesMarketCap(1),
                 StockSource.Sp500,
-                StockSource.Nasdaq,
+//                StockSource.Nasdaq,
             )
         val result = getStockUseCase.execute(stockSources, true)
         result.forEachIndexed { index, s ->
@@ -45,3 +45,4 @@ fun main() =
 
         println("AdeDom :: END")
     }
+}
