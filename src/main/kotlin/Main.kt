@@ -36,7 +36,7 @@ fun main() {
             listOf(
                 StockSource.CompaniesMarketCap(1),
                 StockSource.Sp500,
-//                StockSource.Nasdaq,
+                StockSource.Nasdaq,
             )
         val result = getStockUseCase.execute(stockSources, true)
         result.forEachIndexed { index, s ->

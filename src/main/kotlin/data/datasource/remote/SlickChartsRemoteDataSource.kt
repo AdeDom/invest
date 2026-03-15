@@ -16,8 +16,11 @@ interface SlickChartsRemoteDataSource {
 class SlickChartsRemoteDataSourceImpl(
     private val httpClientProvider: HttpClientProvider,
 ) : SlickChartsRemoteDataSource {
-    override suspend fun fetchSp500(): List<SlickChartsResponse> {
-        val url = "https://www.slickcharts.com/sp500"
+    override suspend fun fetchSp500(): List<SlickChartsResponse> = responses("https://www.slickcharts.com/sp500")
+
+    override suspend fun fetchNasdaq100(): List<SlickChartsResponse> = responses("https://www.slickcharts.com/nasdaq100")
+
+    private suspend fun responses(url: String): List<SlickChartsResponse> {
         val html = httpClientProvider.client.get(url).bodyAsText()
         val doc: Document = Parser.parse(html, url)
         val master = doc.getElementsByClass("table table-hover table-borderless table-sm").firstOrNull()
@@ -31,24 +34,5 @@ class SlickChartsRemoteDataSourceImpl(
                 symbol = td[2].text().trim(),
             )
         } ?: emptyList()
-    }
-
-    override suspend fun fetchNasdaq100(): List<SlickChartsResponse> {
-        val url = "https://www.slickcharts.com/nasdaq100"
-        val html = httpClientProvider.client.get(url).bodyAsText()
-        val doc: Document = Parser.parse(html, url)
-        val body = doc.getElementById("companyListComponent")
-        val tr = body?.getElementsByTag("tr")
-        return tr
-            ?.mapIndexedNotNull { index, element ->
-                if (index % 2 == 0) element else null
-            }?.map {
-                val td = it.getElementsByTag("td")
-                SlickChartsResponse(
-                    id = td[0].text().toIntOrNull(),
-                    company = td[1].text().trim(),
-                    symbol = td[2].text().trim(),
-                )
-            } ?: emptyList()
     }
 }
